@@ -125,18 +125,18 @@ func TestFull(t *testing.T) {
 	assert.Nil(t, err)
 	var i byte
 	var n uint8 = 255
-	assert.Equal(t, uint32(0), db.Count())
+	assert.Equal(t, uint64(0), db.Count())
 	for i = 0; i < n; i++ {
 		if has, err := db.Has([]byte{i}); has || err != nil {
 			t.Fatal(has, err)
 		}
 	}
 	assert.Nil(t, db.Delete([]byte{128}))
-	assert.Equal(t, uint32(0), db.Count())
+	assert.Equal(t, uint64(0), db.Count())
 	for i = 0; i < n; i++ {
 		assert.Nil(t, db.Put([]byte{i}, []byte{i}))
 	}
-	assert.Equal(t, uint32(255), db.Count())
+	assert.Equal(t, uint64(255), db.Count())
 	assert.Equal(t, int64(n), db.Metrics().Puts.Value())
 	assert.Nil(t, db.Sync())
 
@@ -147,16 +147,16 @@ func TestFull(t *testing.T) {
 	}
 
 	assert.Nil(t, db.Delete([]byte{128}))
-	assert.Equal(t, uint32(254), db.Count())
+	assert.Equal(t, uint64(254), db.Count())
 	if has, err := db.Has([]byte{128}); has || err != nil {
 		t.Fatal(has, err)
 	}
 	assert.Nil(t, db.Put([]byte{128}, []byte{128}))
-	assert.Equal(t, uint32(255), db.Count())
+	assert.Equal(t, uint64(255), db.Count())
 
 	verifyKeysAndClose := func(valueOffset uint8) {
 		t.Helper()
-		assert.Equal(t, uint32(255), db.Count())
+		assert.Equal(t, uint64(255), db.Count())
 		for i = 0; i < n; i++ {
 			if has, err := db.Has([]byte{i}); !has || err != nil {
 				t.Fatal(has, err)
@@ -212,7 +212,7 @@ func TestFull(t *testing.T) {
 			t.Fatal(has, err)
 		}
 	}
-	assert.Equal(t, uint32(0), db.Count())
+	assert.Equal(t, uint64(0), db.Count())
 	assert.Nil(t, db.Close())
 }
 
@@ -434,7 +434,7 @@ func BenchmarkBucket_UnmarshalBinary(b *testing.B) {
 		slots: [slotsPerBucket]slot{},
 	}
 	for i := 0; i < slotsPerBucket; i++ {
-		testBucket.slots[i].hash = uint32(i)
+		testBucket.slots[i].hash = uint64(i)
 		testBucket.slots[i].keySize = uint16(i + 1)
 		testBucket.slots[i].valueSize = uint32(i + 17)
 	}

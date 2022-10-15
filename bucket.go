@@ -6,12 +6,12 @@ import (
 
 const (
 	bucketSize     = 512
-	slotsPerBucket = 31 // Maximum number of slots possible to fit in a 512-byte bucket.
+	slotsPerBucket = 25 // Maximum number of slots possible to fit in a 512-byte bucket.
 )
 
 // slot corresponds to a single item in the hash table.
 type slot struct {
-	hash      uint32
+	hash      uint64
 	segmentID uint16
 	keySize   uint16
 	valueSize uint32
@@ -40,12 +40,12 @@ func (b bucket) MarshalBinary() ([]byte, error) {
 	data := buf
 	for i := 0; i < slotsPerBucket; i++ {
 		sl := b.slots[i]
-		binary.LittleEndian.PutUint32(buf[:4], sl.hash)
-		binary.LittleEndian.PutUint16(buf[4:6], sl.segmentID)
-		binary.LittleEndian.PutUint16(buf[6:8], sl.keySize)
-		binary.LittleEndian.PutUint32(buf[8:12], sl.valueSize)
-		binary.LittleEndian.PutUint32(buf[12:16], sl.offset)
-		buf = buf[16:]
+		binary.LittleEndian.PutUint64(buf[:8], sl.hash)
+		binary.LittleEndian.PutUint16(buf[8:10], sl.segmentID)
+		binary.LittleEndian.PutUint16(buf[10:12], sl.keySize)
+		binary.LittleEndian.PutUint32(buf[12:16], sl.valueSize)
+		binary.LittleEndian.PutUint32(buf[16:20], sl.offset)
+		buf = buf[20:]
 	}
 	binary.LittleEndian.PutUint64(buf[:8], uint64(b.next))
 	return data, nil
@@ -53,13 +53,13 @@ func (b bucket) MarshalBinary() ([]byte, error) {
 
 func (b *bucket) UnmarshalBinary(data []byte) error {
 	for i := 0; i < slotsPerBucket; i++ {
-		_ = data[16] // bounds check hint to compiler; see golang.org/issue/14808
-		b.slots[i].hash = binary.LittleEndian.Uint32(data[:4])
-		b.slots[i].segmentID = binary.LittleEndian.Uint16(data[4:6])
-		b.slots[i].keySize = binary.LittleEndian.Uint16(data[6:8])
-		b.slots[i].valueSize = binary.LittleEndian.Uint32(data[8:12])
-		b.slots[i].offset = binary.LittleEndian.Uint32(data[12:16])
-		data = data[16:]
+		_ = data[20] // bounds check hint to compiler; see golang.org/issue/14808
+		b.slots[i].hash = binary.LittleEndian.Uint64(data[:8])
+		b.slots[i].segmentID = binary.LittleEndian.Uint16(data[8:10])
+		b.slots[i].keySize = binary.LittleEndian.Uint16(data[10:12])
+		b.slots[i].valueSize = binary.LittleEndian.Uint32(data[12:16])
+		b.slots[i].offset = binary.LittleEndian.Uint32(data[16:20])
+		data = data[20:]
 	}
 	b.next = int64(binary.LittleEndian.Uint64(data[:8]))
 	return nil

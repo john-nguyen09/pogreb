@@ -21,16 +21,16 @@ type index struct {
 	overflow       *file   // Overflow index file.
 	freeBucketOffs []int64 // Offsets of freed buckets.
 	level          uint8   // Maximum number of buckets on a logarithmic scale.
-	numKeys        uint32  // Number of keys.
-	numBuckets     uint32  // Number of buckets.
-	splitBucketIdx uint32  // Index of the bucket to split on next split.
+	numKeys        uint64  // Number of keys.
+	numBuckets     uint64  // Number of buckets.
+	splitBucketIdx uint64  // Index of the bucket to split on next split.
 }
 
 type indexMeta struct {
 	Level               uint8
-	NumKeys             uint32
-	NumBuckets          uint32
-	SplitBucketIndex    uint32
+	NumKeys             uint64
+	NumBuckets          uint64
+	SplitBucketIndex    uint64
 	FreeOverflowBuckets []int64
 }
 
@@ -92,7 +92,7 @@ func (idx *index) readMeta() error {
 	return nil
 }
 
-func (idx *index) bucketIndex(hash uint32) uint32 {
+func (idx *index) bucketIndex(hash uint64) uint64 {
 	bidx := hash & ((1 << idx.level) - 1)
 	if bidx < idx.splitBucketIdx {
 		return hash & ((1 << (idx.level + 1)) - 1)
@@ -107,11 +107,11 @@ type bucketIterator struct {
 }
 
 // bucketOffset returns on-disk bucket offset by the bucket index.
-func bucketOffset(idx uint32) int64 {
+func bucketOffset(idx uint64) int64 {
 	return int64(headerSize) + (int64(bucketSize) * int64(idx))
 }
 
-func (idx *index) newBucketIterator(startBucketIdx uint32) *bucketIterator {
+func (idx *index) newBucketIterator(startBucketIdx uint64) *bucketIterator {
 	return &bucketIterator{
 		off:      bucketOffset(startBucketIdx),
 		f:        idx.main,
@@ -132,7 +132,7 @@ func (it *bucketIterator) next() (bucketHandle, error) {
 	return b, nil
 }
 
-func (idx *index) get(hash uint32, matchKey matchKeyFunc) error {
+func (idx *index) get(hash uint64, matchKey matchKeyFunc) error {
 	it := idx.newBucketIterator(idx.bucketIndex(hash))
 	for {
 		b, err := it.next()
@@ -226,7 +226,7 @@ func (idx *index) put(newSlot slot, matchKey matchKeyFunc) error {
 	return nil
 }
 
-func (idx *index) delete(hash uint32, matchKey matchKeyFunc) error {
+func (idx *index) delete(hash uint64, matchKey matchKeyFunc) error {
 	it := idx.newBucketIterator(idx.bucketIndex(hash))
 	for {
 		b, err := it.next()
@@ -358,6 +358,6 @@ func (idx *index) close() error {
 	return nil
 }
 
-func (idx *index) count() uint32 {
+func (idx *index) count() uint64 {
 	return idx.numKeys
 }

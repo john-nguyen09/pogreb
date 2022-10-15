@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
+	xxhash "github.com/cespare/xxhash/v2"
 	"github.com/john-nguyen09/pogreb/fs"
 	"github.com/john-nguyen09/pogreb/internal/errors"
-	"github.com/john-nguyen09/pogreb/internal/hash"
 )
 
 const (
@@ -35,7 +35,6 @@ type DB struct {
 	index             *index
 	datalog           *datalog
 	lock              fs.LockFile // Prevents opening multiple instances of the same database.
-	hashSeed          uint32
 	metrics           *Metrics
 	syncWrites        bool
 	cancelBgWorker    context.CancelFunc
@@ -44,7 +43,6 @@ type DB struct {
 }
 
 type dbMeta struct {
-	HashSeed uint32
 }
 
 // Open opens or creates a new DB.
@@ -99,12 +97,6 @@ func Open(path string, opts *Options) (*DB, error) {
 		syncWrites: opts.BackgroundSyncInterval == -1,
 	}
 	if index.count() == 0 {
-		// The index is empty, make a new hash seed.
-		seed, err := hash.RandSeed()
-		if err != nil {
-			return nil, err
-		}
-		db.hashSeed = seed
 	} else {
 		if err := db.readMeta(); err != nil {
 			return nil, errors.Wrap(err, "reading db meta")
@@ -132,9 +124,7 @@ func cloneBytes(src []byte) []byte {
 }
 
 func (db *DB) writeMeta() error {
-	m := dbMeta{
-		HashSeed: db.hashSeed,
-	}
+	m := dbMeta{}
 	return writeGobFile(db.opts.FileSystem, dbMetaName, m)
 }
 
@@ -143,12 +133,11 @@ func (db *DB) readMeta() error {
 	if err := readGobFile(db.opts.FileSystem, dbMetaName, &m); err != nil {
 		return err
 	}
-	db.hashSeed = m.HashSeed
 	return nil
 }
 
-func (db *DB) hash(data []byte) uint32 {
-	return hash.Sum32WithSeed(data, db.hashSeed)
+func (db *DB) hash(data []byte) uint64 {
+	return xxhash.Sum64(data)
 }
 
 // newNullableTicker is a wrapper around time.NewTicker that allows creating a nil ticker.
@@ -301,7 +290,7 @@ func (db *DB) Put(key []byte, value []byte) error {
 	return nil
 }
 
-func (db *DB) del(h uint32, key []byte, writeWAL bool) error {
+func (db *DB) del(h uint64, key []byte, writeWAL bool) error {
 	err := db.index.delete(h, func(sl slot) (b bool, e error) {
 		if uint16(len(key)) != sl.keySize {
 			return false, nil
@@ -378,7 +367,7 @@ func (db *DB) Sync() error {
 }
 
 // Count returns the number of keys in the DB.
-func (db *DB) Count() uint32 {
+func (db *DB) Count() uint64 {
 	db.mu.RLock()
 	defer db.mu.RUnlock()
 	return db.index.count()

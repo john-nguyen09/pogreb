@@ -16,13 +16,13 @@ type item struct {
 // ItemIterator is an iterator over DB key-value pairs. It iterates the items in an unspecified order.
 type ItemIterator struct {
 	db            *DB
-	nextBucketIdx uint32
+	nextBucketIdx uint64
 	queue         []item
 	mu            sync.Mutex
 }
 
 // fetchItems adds items to the iterator queue from a bucket located at nextBucketIdx.
-func (it *ItemIterator) fetchItems(nextBucketIdx uint32) error {
+func (it *ItemIterator) fetchItems(nextBucketIdx uint64) error {
 	bit := it.db.index.newBucketIterator(nextBucketIdx)
 	for {
 		b, err := bit.next()
