@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/akrylysov/pogreb/internal/assert"
+	"github.com/john-nguyen09/pogreb/internal/assert"
 )
 
 func TestIteratorEmpty(t *testing.T) {

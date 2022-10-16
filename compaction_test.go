@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/akrylysov/pogreb/internal/assert"
+	"github.com/john-nguyen09/pogreb/internal/assert"
 )
 
 func fileExists(name string) bool {

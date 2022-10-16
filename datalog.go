@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/akrylysov/pogreb/internal/errors"
+	"github.com/john-nguyen09/pogreb/internal/errors"
 )
 
 const (

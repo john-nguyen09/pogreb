@@ -3,7 +3,7 @@ package hash
 import (
 	"testing"
 
-	"github.com/akrylysov/pogreb/internal/assert"
+	"github.com/john-nguyen09/pogreb/internal/assert"
 )
 
 func TestRandSeed(t *testing.T) {

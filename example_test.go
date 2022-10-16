@@ -3,7 +3,7 @@ package pogreb_test
 import (
 	"log"
 
-	"github.com/akrylysov/pogreb"
+	"github.com/john-nguyen09/pogreb"
 )
 
 func Example() {

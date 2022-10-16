@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/akrylysov/pogreb/internal/assert"
+	"github.com/john-nguyen09/pogreb/internal/assert"
 )
 
 func TestSum32WithSeed(t *testing.T) {

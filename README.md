@@ -1,9 +1,9 @@
 <p align="center"><img src="https://akrylysov.github.io/pogreb/logo.svg" width="300"></p>
 
 # Pogreb
-[![Docs](https://godoc.org/github.com/akrylysov/pogreb?status.svg)](https://pkg.go.dev/github.com/akrylysov/pogreb)
-[![Build Status](https://github.com/akrylysov/pogreb/actions/workflows/test.yaml/badge.svg?branch=master)](https://github.com/akrylysov/pogreb/actions)
-[![Go Report Card](https://goreportcard.com/badge/github.com/akrylysov/pogreb)](https://goreportcard.com/report/github.com/akrylysov/pogreb)
+[![Docs](https://godoc.org/github.com/john-nguyen09/pogreb?status.svg)](https://pkg.go.dev/github.com/john-nguyen09/pogreb)
+[![Build Status](https://github.com/john-nguyen09/pogreb/actions/workflows/test.yaml/badge.svg?branch=master)](https://github.com/john-nguyen09/pogreb/actions)
+[![Go Report Card](https://goreportcard.com/badge/github.com/john-nguyen09/pogreb)](https://goreportcard.com/report/github.com/john-nguyen09/pogreb)
 [![Codecov](https://codecov.io/gh/akrylysov/pogreb/branch/master/graph/badge.svg)](https://codecov.io/gh/akrylysov/pogreb)
 
 Pogreb is an embedded key-value store for read-heavy workloads written in Go.
@@ -19,7 +19,7 @@ Pogreb is an embedded key-value store for read-heavy workloads written in Go.
 ## Installation
 
 ```sh
-$ go get -u github.com/akrylysov/pogreb
+$ go get -u github.com/john-nguyen09/pogreb
 ```
 
 ## Usage
@@ -34,7 +34,7 @@ package main
 import (
 	"log"
 
-	"github.com/akrylysov/pogreb"
+	"github.com/john-nguyen09/pogreb"
 )
 
 func main() {
@@ -90,7 +90,7 @@ for {
 
 ## Performance
 
-The benchmarking code can be found in the [pogreb-bench](https://github.com/akrylysov/pogreb-bench) repository.
+The benchmarking code can be found in the [pogreb-bench](https://github.com/john-nguyen09/pogreb-bench) repository.
 
 Results of read performance benchmark of pogreb, goleveldb, bolt and badgerdb
 on DigitalOcean 8 CPUs / 16 GB RAM / 160 GB SSD + Ubuntu 16.04.3 (higher is better):

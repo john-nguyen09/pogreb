@@ -1,3 +1,4 @@
+//go:build go1.13
 // +build go1.13
 
 package errors
@@ -6,7 +7,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/akrylysov/pogreb/internal/assert"
+	"github.com/john-nguyen09/pogreb/internal/assert"
 )
 
 func TestIs(t *testing.T) {

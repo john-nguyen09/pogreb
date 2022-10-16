@@ -4,7 +4,7 @@ import (
 	"io"
 	"path/filepath"
 
-	"github.com/akrylysov/pogreb/fs"
+	"github.com/john-nguyen09/pogreb/fs"
 )
 
 const (
